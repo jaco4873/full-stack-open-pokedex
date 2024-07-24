@@ -1,10 +1,14 @@
-import express, { static as expressStatic } from 'express'
+const express = require('express')
 const app = express()
 
 // get the port from env variable
 const PORT = process.env.PORT || 5000
 
-app.use(expressStatic('dist'))
+app.use(express('dist'))
+
+app.get('/version', (req, res) => {
+  res.send('1')
+})
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
