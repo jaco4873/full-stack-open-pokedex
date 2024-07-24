@@ -8,8 +8,10 @@ on:
     branches: [main]
     types: [opened, synchronize]
 
-jobs:
+env:
+  JOINT_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message, ' ') }}
 
+jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
@@ -33,10 +35,8 @@ jobs:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
         run: echo "$COMMIT_MESSAGES"
 
-      - name: join commit messages
-        env:
-          JOINT_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message, ' ') }}
-        run: echo "$JOINT_COMMIT_MESSAGES"
+      - name: checking joint commit messages
+        run: echo ${{ env.JOINT_COMMIT_MESSAGES }}
 
       - name: Install dependencies
         run: npm install
