@@ -18,24 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: github context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: commits
-        env:
-          COMMITS: ${{ toJson(github.event.commits) }}
-        run: echo "$COMMITS"
-        
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES" 
+      - name: Extract commit messages
+        id: extract_commit_messages
+        run: |
+          echo "COMMIT_MESSAGES=$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '. | join(\" \")')" >> $GITHUB_ENV
 
-      - name: join commit messages
-        env:
-          COMMIT_MESSAGES: ${{ join(github.event.commits.*.message, '\n') }}
-        run: echo "${{ join(github.event.commits.*.message, '\n') }}" >> $GITHUB_ENV
+      - name: Verify commit messages
+        run: echo "$COMMIT_MESSAGES"
 
       - name: Install dependencies
         run: npm install
