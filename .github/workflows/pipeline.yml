@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  JOINT_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message) }}
+  COMMIT_MESSAGES: ${{ join(github.event.commits.*.message) }}
 
 jobs:
   simple_deployment_pipeline:
@@ -25,9 +25,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: checking joint commit messages
-        run: echo ${{ env.JOINT_COMMIT_MESSAGES }}
-
       - name: Install dependencies
         run: npm install
 
@@ -42,7 +39,7 @@ jobs:
 
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-        if: ${{ github.event_name == 'push' && !contains(env.JOINT_COMMIT_MESSAGES, '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(env.COMMIT_MESSAGES, '#skip') }}
 
   tag_release:
     needs: [simple_deployment_pipeline]
@@ -50,7 +47,7 @@ jobs:
     steps: 
       - uses: actions/checkout@v4
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && !contains(env.JOINT_COMMIT_MESSAGES, '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(env.COMMIT_MESSAGES, '#skip') }}
         uses: anothrNick/github-tag-action@1.70.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
