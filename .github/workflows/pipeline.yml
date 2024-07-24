@@ -29,16 +29,14 @@ jobs:
         
       - name: commit messages
         run: |
-          echo "COMMIT_MESSAGES=$(echo "${{ toJson(github.event.commits.*.message) }}" | jq -r '.[]' | tr '\n' ',')" >> $GITHUB_ENV
-      
-      - name: echo commit messages
-        run: echo "${{ env.COMMIT_MESSAGES }}"
+          echo "COMMIT_MESSAGES=$(echo "${{ toJson(github.event.commits.*.message) }}"
         
-      - name: join commit messages
-        run: echo "JOINT_COMMIT_MESSAGES=$(echo '${{ env.COMMIT_MESSAGES }}' | tr -d '[]\" ')" >> $GITHUB_ENV
-
-      - name: echo joined commit messages
-        run: echo "${{ env.JOINT_COMMIT_MESSAGES }}"
+      - name: Join commit messages
+        run: |
+          JOINT_COMMIT_MESSAGES=$(echo "${{ toJson(github.event.commits.*.message) }}" | tr -d '\n')
+          echo "JOINT_COMMIT_MESSAGES=$JOINT_COMMIT_MESSAGES"
+        env:
+          JOINT_COMMIT_MESSAGES: ${{ steps.join_commit_messages.outputs.JOINT_COMMIT_MESSAGES }}
 
       - name: Install dependencies
         run: npm install
