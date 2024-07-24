@@ -28,14 +28,17 @@ jobs:
         run: echo "$COMMITS"
         
       - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES" 
-
+        run: |
+          echo "COMMIT_MESSAGES=$(echo "${{ toJson(github.event.commits.*.message) }}" | jq -r '.[]' | tr '\n' ',')" >> $GITHUB_ENV
+      
+      - name: echo commit messages
+        run: echo "${{ env.COMMIT_MESSAGES }}"
+        
       - name: join commit messages
-        env:
-          JOINT_COMMIT_MESSAGES: ${{ join(COMMIT_MESSAGES) }}
-        run: echo "$JOINT_COMMIT_MESSAGES"
+        run: echo "JOINT_COMMIT_MESSAGES=$(echo '${{ env.COMMIT_MESSAGES }}' | tr -d '[]\" ')" >> $GITHUB_ENV
+
+      - name: echo joined commit messages
+        run: echo "${{ env.JOINT_COMMIT_MESSAGES }}"
 
       - name: Install dependencies
         run: npm install
