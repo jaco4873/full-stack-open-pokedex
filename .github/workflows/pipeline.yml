@@ -55,7 +55,6 @@ jobs:
   discord_notifications:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && !contains(env.COMMIT_MESSAGES, '#skip') }}
     
     steps:
       - uses: actions/checkout@v4
