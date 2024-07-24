@@ -26,10 +26,16 @@ jobs:
         env:
           COMMITS: ${{ toJson(github.event.commits) }}
         run: echo "$COMMITS"
+        
       - name: commit messages
         env:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
+        run: echo "$COMMIT_MESSAGES" 
+
+      - name: join commit messages
+        env:
+          COMMIT_MESSAGES: ${{ join(github.event.commits.*.message, '\n') }}
+        run: echo "${{ join(github.event.commits.*.message, '\n') }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm install
@@ -45,7 +51,7 @@ jobs:
 
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-        if: ${{ github.event_name == 'push' && !contains(env.COMMIT_MESSAGES, '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(COMMIT_MESSAGES, '#skip') }}
 
   tag_release:
     needs: [simple_deployment_pipeline]
