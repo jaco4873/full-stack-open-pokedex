@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  JOINT_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message, ' ') }}
+  JOINT_COMMIT_MESSAGES: ${{ join(github.event.commits.*.message) }}
 
 jobs:
   simple_deployment_pipeline:
@@ -24,16 +24,6 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-
-      - name: commits
-        env:
-          COMMITS: ${{ toJson(github.event.commits) }}
-        run: echo "$COMMITS"
-
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
 
       - name: checking joint commit messages
         run: echo ${{ env.JOINT_COMMIT_MESSAGES }}
