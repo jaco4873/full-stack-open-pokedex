@@ -21,7 +21,7 @@ jobs:
       - name: Extract commit messages
         id: extract_commit_messages
         run: |
-          echo "COMMIT_MESSAGES=$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '. | join(\" \")')" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGES=$(join(toJSON(github.event.commits.*.message), ' '))" >> $GITHUB_ENV
 
       - name: Verify commit messages
         run: echo "$COMMIT_MESSAGES"
