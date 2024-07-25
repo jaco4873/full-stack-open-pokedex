@@ -1,0 +1,15 @@
+name: "healthcheck"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test_schedule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: URL Health Check
+        uses: Jtalk/url-health-check-action@b716ccb6645355dd9fcce8002ce460e5474f7f00
+        with:
+          url: https://full-stack-open-pokedex-hl99.onrender.com/health
